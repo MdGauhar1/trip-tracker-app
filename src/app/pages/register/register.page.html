@@ -1,0 +1,144 @@
+
+<ion-header>
+  <ion-toolbar color="primary">
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Trip Tracker</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="register-container">
+
+    <!-- App Logo -->
+    <div class="logo-container">
+
+      <ion-icon
+        name="navigate-outline"
+        class="app-logo">
+      </ion-icon>
+
+    </div>
+
+    <!-- Heading -->
+    <h1>Create Account</h1>
+
+    <p class="subtitle">
+      Join your friends and share your live location.
+    </p>
+
+    <!-- Registration Form -->
+    <form (ngSubmit)="register()">
+
+      <!-- Name -->
+      <ion-item class="form-item">
+
+        <ion-input
+          label="Full Name"
+          labelPlacement="floating"
+          type="text"
+          name="name"
+          [(ngModel)]="name"
+          autocomplete="name"
+          required>
+        </ion-input>
+
+      </ion-item>
+
+      <!-- Email -->
+      <ion-item class="form-item">
+
+        <ion-input
+          label="Email Address"
+          labelPlacement="floating"
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          autocomplete="email"
+          required>
+        </ion-input>
+
+      </ion-item>
+
+      <!-- Password -->
+      <ion-item class="form-item">
+
+        <ion-input
+          label="Password"
+          labelPlacement="floating"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          autocomplete="new-password"
+          required>
+        </ion-input>
+
+      </ion-item>
+
+      <!-- Error Message -->
+      <ion-text
+        color="danger"
+        *ngIf="errorMessage">
+
+        <p class="message">
+          {{ errorMessage }}
+        </p>
+
+      </ion-text>
+
+      <!-- Success Message -->
+      <ion-text
+        color="success"
+        *ngIf="successMessage">
+
+        <p class="message">
+          {{ successMessage }}
+        </p>
+
+      </ion-text>
+
+      <!-- Register Button -->
+      <ion-button
+        expand="block"
+        type="submit"
+        class="register-button"
+        [disabled]="loading">
+
+        <ion-spinner
+          *ngIf="loading"
+          name="crescent">
+        </ion-spinner>
+
+        <span *ngIf="!loading">
+          Create Account
+        </span>
+
+      </ion-button>
+
+    </form>
+
+    <!-- Login Navigation -->
+    <div class="login-section">
+
+      <p>
+        Already have an account?
+      </p>
+
+      <ion-button
+        fill="clear"
+        routerLink="/login">
+
+        Sign In
+
+      </ion-button>
+
+    </div>
+
+  </div>
+
+</ion-content>

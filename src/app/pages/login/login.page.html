@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Trip Tracker</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="login-container">
+
+    <div class="login-heading">
+      <h1>Welcome Back</h1>
+      <p>Sign in to continue tracking your trips.</p>
+    </div>
+
+    <form (ngSubmit)="login()">
+
+      <ion-item>
+        <ion-input
+          label="Email"
+          labelPlacement="floating"
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          autocomplete="email"
+          required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="Password"
+          labelPlacement="floating"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          autocomplete="current-password"
+          required>
+        </ion-input>
+      </ion-item>
+
+      <ion-text color="danger" *ngIf="errorMessage">
+        <p class="error-message">{{ errorMessage }}</p>
+      </ion-text>
+
+      <ion-button
+        expand="block"
+        type="submit"
+        class="login-button"
+        [disabled]="loading">
+
+        <ion-spinner
+          *ngIf="loading"
+          name="crescent">
+        </ion-spinner>
+
+        <span *ngIf="!loading">Login</span>
+
+      </ion-button>
+
+    </form>
+
+    <div class="register-link">
+      <p>
+        Don't have an account?
+        <a routerLink="/register">Register</a>
+      </p>
+    </div>
+
+  </div>
+
+</ion-content>

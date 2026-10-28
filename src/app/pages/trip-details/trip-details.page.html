@@ -1,0 +1,170 @@
+
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Trip Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="trip-details-content">
+  <div class="page-container">
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading trip details...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" *ngIf="!loading && errorMessage">
+      <h2>Unable to load trip</h2>
+
+      <ion-text color="danger">
+        <p>{{ errorMessage }}</p>
+      </ion-text>
+
+      <ion-button (click)="goHome()">
+        Back to Home
+      </ion-button>
+    </div>
+
+    <!-- Trip Details -->
+    <ng-container *ngIf="!loading && trip as details">
+
+      <!-- Trip Hero -->
+      <section class="trip-hero">
+        <div class="trip-icon">✈️</div>
+
+        <div class="trip-heading">
+          <p class="eyebrow">YOUR ADVENTURE</p>
+
+          <h1>{{ details.name }}</h1>
+
+          <span
+            class="status-badge"
+            [class.inactive]="!details.active">
+            {{ details.active ? 'Active Trip' : 'Inactive Trip' }}
+          </span>
+        </div>
+      </section>
+
+      <!-- Trip Information -->
+      <ion-card class="details-card">
+        <ion-card-header>
+          <ion-card-title>Trip Information</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="info-row">
+            <span class="info-label">Created by</span>
+            <strong>{{ details.createdByName }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">Created on</span>
+            <strong>{{ formatDate(details.createdAt) }}</strong>
+          </div>
+
+          <div class="join-code-section">
+            <div>
+              <span class="info-label">Trip join code</span>
+              <h2 class="join-code">{{ details.joinCode }}</h2>
+            </div>
+
+            <ion-button
+              size="small"
+              (click)="copyJoinCode()">
+              Copy code
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Leave Trip -->
+      <section class="leave-trip-section">
+        <ion-button
+          expand="block"
+          color="danger"
+          fill="outline"
+          (click)="leaveTrip()">
+          Leave Trip
+        </ion-button>
+
+        <p class="leave-trip-hint">
+          You will be removed from this trip and its member list.
+        </p>
+      </section>
+
+      <!-- Trip Members -->
+      <section class="members-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">TRAVEL TOGETHER</p>
+            <h2>Trip Members</h2>
+          </div>
+
+          <span class="member-count">
+            {{ details.members?.length || 0 }}
+            {{ details.members?.length === 1 ? 'member' : 'members' }}
+          </span>
+        </div>
+
+        <ion-card class="members-card">
+          <ion-list *ngIf="details.members?.length; else noMembers">
+
+            <ion-item
+              *ngFor="let member of details.members; trackBy: trackMember"
+              lines="full"
+              class="member-item">
+
+              <div class="member-avatar" slot="start">
+                {{ member.name?.charAt(0)?.toUpperCase() || '?' }}
+              </div>
+
+              <ion-label>
+                <h3>{{ member.name }}</h3>
+
+                <p>
+                  {{ member.role === 'ADMIN'
+                    ? 'Trip administrator'
+                    : 'Trip member' }}
+                </p>
+
+                <p class="joined-date">
+                  Joined {{ formatDate(member.joinedAt) }}
+                </p>
+              </ion-label>
+
+              <div slot="end" class="member-meta">
+                <span
+                  class="role-badge"
+                  [class.admin]="member.role === 'ADMIN'">
+                  {{ member.role }}
+                </span>
+
+                <span
+                  class="sharing-status"
+                  [class.sharing-on]="member.sharingEnabled">
+                  {{ member.sharingEnabled ? 'Sharing on' : 'Sharing off' }}
+                </span>
+              </div>
+
+            </ion-item>
+
+          </ion-list>
+
+          <ng-template #noMembers>
+            <div class="empty-members">
+              No members found for this trip.
+            </div>
+          </ng-template>
+        </ion-card>
+      </section>
+
+    </ng-container>
+
+  </div>
+</ion-content>

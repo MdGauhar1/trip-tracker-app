@@ -1,0 +1,331 @@
+
+.trip-details-content {
+  --background: #f6f8fc;
+}
+
+.page-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 22px 16px 40px;
+}
+
+.loading-state,
+.error-state {
+  min-height: 45vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.loading-state ion-spinner {
+  color: #5368e8;
+  width: 36px;
+  height: 36px;
+}
+
+.trip-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 4px 28px;
+}
+
+.trip-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: #e8edff;
+  font-size: 30px;
+}
+
+.trip-heading h1 {
+  margin: 0 0 12px;
+  color: #202b45;
+  font-size: clamp(24px, 5vw, 32px);
+  overflow-wrap: anywhere;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #68769b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.status-badge,
+.role-badge,
+.sharing-status {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-badge {
+  background: #e1f7ea;
+  color: #167547;
+}
+
+.status-badge.inactive {
+  background: #f0f1f5;
+  color: #626b7e;
+}
+
+.details-card,
+.members-card {
+  margin: 0 0 26px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 5px 22px rgb(31 45 85 / 5%);
+}
+
+.details-card ion-card-title {
+  color: #202b45;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf0f6;
+  color: #27334e;
+  font-size: 13px;
+}
+
+.info-label {
+  color: #778198;
+  font-size: 13px;
+}
+
+.info-row strong {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.join-code-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px dashed #c9d2ff;
+  border-radius: 14px;
+  background: #f7f8ff;
+}
+
+.join-code {
+  margin: 7px 0 0;
+  color: #465be0;
+  font-size: 24px;
+  letter-spacing: 3px;
+  overflow-wrap: anywhere;
+}
+
+.members-section {
+  margin-top: 30px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 2px 14px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: #202b45;
+  font-size: 22px;
+}
+
+.member-count {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #e8edff;
+  color: #465be0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.members-card {
+  overflow: hidden;
+}
+
+.members-card ion-list {
+  padding: 0;
+}
+
+.member-item {
+  --padding-start: 14px;
+  --inner-padding-end: 12px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  --background: #fff;
+}
+
+.member-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  margin-right: 12px;
+  border-radius: 50%;
+  background: #e8edff;
+  color: #465be0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.member-item ion-label h3 {
+  color: #27334e;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.member-item ion-label p {
+  margin-top: 5px;
+  color: #778198;
+  font-size: 12px;
+}
+
+.member-item ion-label .joined-date {
+  font-size: 11px;
+}
+
+.member-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+  margin-left: 6px;
+}
+
+.role-badge {
+  background: #f0f1f5;
+  color: #626b7e;
+}
+
+.role-badge.admin {
+  background: #fff0d8;
+  color: #9a5b00;
+}
+
+.sharing-status {
+  background: #f0f1f5;
+  color: #626b7e;
+  white-space: nowrap;
+}
+
+.sharing-status.sharing-on {
+  background: #e1f7ea;
+  color: #167547;
+}
+
+.empty-members {
+  padding: 28px 16px;
+  color: #778198;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .page-container {
+    padding: 16px 10px 30px;
+  }
+
+  .trip-hero {
+    gap: 12px;
+  }
+
+  .trip-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 25px;
+  }
+
+  .member-item {
+    --padding-start: 8px;
+    --inner-padding-end: 6px;
+  }
+
+  .member-avatar {
+    width: 34px;
+    height: 34px;
+    margin-right: 8px;
+  }
+
+  .member-meta {
+    margin-left: 3px;
+  }
+
+  .role-badge,
+  .sharing-status {
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+}
+
+
+
+
+
+
+
+
+
+.leave-trip-section {
+  margin: 24px 0 32px;
+  padding: 20px 16px;
+  background: #f4f7fb;
+  border: 1px solid #dce5f0;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+/* Leave Trip Button */
+.leave-trip-section ion-button {
+  --background: #dc2626;
+  --background-hover: #b91c1c;
+  --background-activated: #991b1b;
+  --color: #ffffff;
+  --border-radius: 12px;
+  --padding-top: 15px;
+  --padding-bottom: 15px;
+
+  width: 100%;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  text-transform: none;
+}
+
+/* Hint Text */
+.leave-trip-hint {
+  margin: 10px 4px 0;
+  padding: 12px 14px;
+  background: #e8efff;
+  color: #234a91;
+  border-left: 4px solid #315efb;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.7;
+  text-align: left;
+  letter-spacing: 0.15px;
+}

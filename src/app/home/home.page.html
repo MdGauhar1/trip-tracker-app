@@ -1,20 +1,570 @@
-<ion-header [translucent]="true">
+
+<ion-header class="main-header" [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <div class="header-content">
+      <div class="brand">
+        <div class="brand-icon">
+          <ion-icon name="navigate-outline"></ion-icon>
+        </div>
+
+        <div class="brand-text">
+          <h2>Trip Tracker</h2>
+          <span>Explore together</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Authentication controls -->
+        <ng-container *ngIf="sessionReady">
+          <!-- Logged out -->
+          <ng-container *ngIf="!isLoggedIn">
+            <ion-button
+              class="header-login-button"
+              fill="clear"
+              (click)="goToLogin()">
+              <ion-icon name="enter-outline" slot="start"></ion-icon>
+              Login
+            </ion-button>
+
+            <ion-button
+              class="header-register-button"
+              fill="solid"
+              (click)="goToRegister()">
+              <ion-icon name="person-add-outline" slot="start"></ion-icon>
+              Register
+            </ion-button>
+          </ng-container>
+
+          <!-- Logged in -->
+          <ng-container *ngIf="isLoggedIn">
+            <ion-button class="header-user-button" fill="clear">
+              <ion-icon
+                name="person-circle-outline"
+                slot="start">
+              </ion-icon>
+              {{ userName || 'My Account' }}
+            </ion-button>
+
+            <ion-button
+              class="header-logout-button"
+              fill="clear"
+              (click)="logout()">
+              Logout
+            </ion-button>
+          </ng-container>
+        </ng-container>
+
+        <!-- Notifications -->
+        <ion-button
+          fill="clear"
+          class="notification-button"
+          aria-label="Notifications">
+          <ion-icon
+            slot="icon-only"
+            name="notifications-outline">
+          </ion-icon>
+        </ion-button>
+
+        <!-- Profile avatar -->
+        <ion-avatar class="profile-avatar">
+          <img
+            src="https://i.pravatar.cc/100?img=12"
+            alt="Profile avatar">
+        </ion-avatar>
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="home-content">
+  <div class="page-container">
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+      <div>
+        <p class="welcome-label">YOUR NEXT ADVENTURE</p>
+
+        <h1>
+          Travel together.<br>
+          <span>Stay connected.</span>
+        </h1>
+
+        <p class="welcome-description">
+          Keep your friends close, wherever your journey takes you.
+        </p>
+      </div>
+
+      <div class="welcome-decoration">
+        <ion-icon name="compass-outline"></ion-icon>
+      </div>
+    </section>
+
+    <!-- Live Location Hero -->
+    <section class="location-hero">
+      <div class="hero-top">
+        <div class="live-status">
+          <span class="live-dot"></span>
+          <span>LOCATION SHARING</span>
+        </div>
+
+        <ion-badge class="private-badge">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          Private
+        </ion-badge>
+      </div>
+
+      <div class="hero-main">
+        <div class="hero-text">
+          <h2>
+            Your people,<br>
+            <span>in one place.</span>
+          </h2>
+
+          <p>
+            Create a trip and see where everyone is on the map.
+          </p>
+        </div>
+
+        <div class="hero-visual">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+
+          <div class="hero-location-icon">
+            <ion-icon name="location-outline"></ion-icon>
+          </div>
+
+          <div class="floating-pin pin-one">
+            <ion-icon name="person-circle-outline"></ion-icon>
+          </div>
+
+          <div class="floating-pin pin-two">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-bottom">
+        <div class="hero-feature">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Group tracking</span>
+        </div>
+
+        <div class="hero-feature">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Privacy first</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="actions-section" id="quick-actions">
+      <div class="section-heading">
+        <div>
+          <p class="section-eyebrow">GET STARTED</p>
+          <h2>Your journey starts here</h2>
+        </div>
+      </div>
+
+      <ion-grid class="actions-grid">
+        <ion-row>
+
+          <!-- Create Trip -->
+          <ion-col size="12" size-md="4">
+            <ion-card
+              class="action-card create-card"
+              button="true"
+              (click)="createTrip()">
+              <ion-card-content>
+                <div class="action-icon create-icon">
+                  <ion-icon name="add-outline"></ion-icon>
+                </div>
+
+                <div class="action-content">
+                  <h3>Create a Trip</h3>
+                  <p>
+                    Start a new group and invite your friends.
+                  </p>
+                </div>
+
+                <div class="action-arrow">
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <!-- Join Trip -->
+          <ion-col size="12" size-md="4">
+            <ion-card
+              class="action-card join-card"
+              button="true"
+              (click)="joinTrip()">
+              <ion-card-content>
+                <div class="action-icon join-icon">
+                  <ion-icon name="enter-outline"></ion-icon>
+                </div>
+
+                <div class="action-content">
+                  <h3>Join a Trip</h3>
+                  <p>
+                    Enter a group code and meet your people.
+                  </p>
+                </div>
+
+                <div class="action-arrow">
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <!-- Register Account -->
+          <ion-col
+            size="12"
+            size-md="4"
+            *ngIf="sessionReady && !isLoggedIn">
+            <ion-card
+              class="action-card register-card"
+              button="true"
+              (click)="goToRegister()">
+              <ion-card-content>
+                <div class="action-icon register-icon">
+                  <ion-icon name="person-add-outline"></ion-icon>
+                </div>
+
+                <div class="action-content">
+                  <h3>Register Account</h3>
+                  <p>
+                    Create your account to start sharing live
+                    locations with your friends.
+                  </p>
+                </div>
+
+                <div class="action-arrow">
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+        </ion-row>
+      </ion-grid>
+    </section>
+
+    <!-- Recent Trips -->
+    <section class="recent-section">
+      <div class="section-heading">
+        <div>
+          <p class="section-eyebrow">YOUR ADVENTURES</p>
+          <h2>Recent trips</h2>
+        </div>
+
+        <ion-button
+          fill="clear"
+          class="view-all-button"
+          (click)="createTrip()">
+          Explore
+          <ion-icon
+            slot="end"
+            name="chevron-forward-outline">
+          </ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Loading State -->
+      <div class="empty-trips" *ngIf="tripsLoading">
+        <div class="empty-icon">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+
+        <h3>Loading your adventures...</h3>
+        <p>Please wait while we fetch your trips.</p>
+      </div>
+
+      <!-- Empty State -->
+      <div
+        class="empty-trips"
+        *ngIf="!tripsLoading && trips.length === 0">
+        <div class="empty-icon">
+          <ion-icon name="map-outline"></ion-icon>
+        </div>
+
+        <h3>Your adventures start here</h3>
+
+        <p>
+          Your trips will appear here once you create a group
+          or join your friends.
+        </p>
+
+        <ion-button
+          fill="outline"
+          class="empty-action"
+          (click)="createTrip()">
+          Create your first trip
+          <ion-icon
+            slot="end"
+            name="arrow-forward-outline">
+          </ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Trips Loaded From Backend -->
+      <ion-grid
+        class="actions-grid"
+        *ngIf="!tripsLoading && trips.length > 0">
+        <ion-row>
+          <ion-col
+            size="12"
+            size-md="6"
+            size-lg="4"
+            *ngFor="let trip of trips">
+            <ion-card
+              class="action-card trip-card"
+              button="true"
+              (click)="openTripDetails(trip.id)"
+              [attr.aria-label]="'View details for ' + trip.name">
+              <ion-card-content>
+                <div class="action-icon create-icon">
+                  <ion-icon name="map-outline"></ion-icon>
+                </div>
+
+                <div class="action-content">
+                  <h3>{{ trip.name }}</h3>
+
+                  <p *ngIf="trip.createdByName">
+                    Created by {{ trip.createdByName }}
+                  </p>
+
+                  <p *ngIf="trip.joinCode">
+                    Join code:
+                    <strong>{{ trip.joinCode }}</strong>
+                  </p>
+
+                  <p *ngIf="trip.role">
+                    Your role: {{ trip.role }}
+                  </p>
+
+                  <ion-badge
+                    [color]="trip.active ? 'success' : 'medium'">
+                    {{ trip.active ? 'Active' : 'Inactive' }}
+                  </ion-badge>
+
+                  <p *ngIf="trip.joinedAt">
+                    Joined:
+                    {{ trip.joinedAt | date:'mediumDate' }}
+                  </p>
+
+                  <p class="trip-details-hint">
+                    View trip details and members
+                    <ion-icon name="arrow-forward-outline"></ion-icon>
+                  </p>
+                </div>
+
+                <div class="action-arrow">
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section" id="features">
+      <div class="section-heading">
+        <div>
+          <p class="section-eyebrow">MADE FOR YOUR CREW</p>
+          <h2>Everything in sync</h2>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon feature-blue">
+            <ion-icon name="location-outline"></ion-icon>
+          </div>
+
+          <div>
+            <h4>Live location</h4>
+            <p>Stay updated on everyone's whereabouts.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon feature-purple">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+
+          <div>
+            <h4>Group sharing</h4>
+            <p>Keep your whole crew connected.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon feature-green">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+          </div>
+
+          <div>
+            <h4>Share on your terms</h4>
+            <p>You control when your location is shared.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="home-footer">
+      <div class="footer-main">
+
+        <!-- Brand -->
+        <div class="footer-brand-section">
+          <div class="footer-brand">
+            <div class="footer-logo">
+              <ion-icon name="navigate-outline"></ion-icon>
+            </div>
+
+            <div class="footer-brand-text">
+              <h2>Trip Tracker</h2>
+              <span>Explore. Connect. Discover.</span>
+            </div>
+          </div>
+
+          <p class="footer-description">
+            Every journey is better together. Stay connected with your
+            friends, share your location, and make every adventure safer
+            and more memorable.
+          </p>
+
+          <div class="footer-status">
+            <span class="status-dot"></span>
+            Your next adventure starts here
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+
+          <a routerLink="/home">
+            <ion-icon name="home-outline"></ion-icon>
+            Home
+          </a>
+
+          <a
+            routerLink="/register"
+            *ngIf="sessionReady && !isLoggedIn">
+            <ion-icon name="person-add-outline"></ion-icon>
+            Create Account
+          </a>
+
+          <a href="#quick-actions">
+            <ion-icon name="people-outline"></ion-icon>
+            Join Your Group
+          </a>
+
+          <a href="#features">
+            <ion-icon name="compass-outline"></ion-icon>
+            Explore Features
+          </a>
+        </div>
+
+        <!-- Features -->
+        <div class="footer-column">
+          <h3>Explore Trip Tracker</h3>
+
+          <div class="footer-feature">
+            <ion-icon name="location-outline"></ion-icon>
+            <div>
+              <strong>Live Location</strong>
+              <span>Stay updated on your group's journey.</span>
+            </div>
+          </div>
+
+          <div class="footer-feature">
+            <ion-icon name="people-outline"></ion-icon>
+            <div>
+              <strong>Group Adventures</strong>
+              <span>Keep your travel group connected.</span>
+            </div>
+          </div>
+
+          <div class="footer-feature">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            <div>
+              <strong>Privacy First</strong>
+              <span>Share your location on your terms.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="footer-cta">
+          <div class="footer-cta-icon">
+            <ion-icon name="map-outline"></ion-icon>
+          </div>
+
+          <h3>Ready for your next adventure?</h3>
+
+          <p>
+            Bring your people together and make every trip count.
+          </p>
+
+          <ion-button
+            class="footer-register-button"
+            routerLink="/register"
+            expand="block"
+            *ngIf="sessionReady && !isLoggedIn">
+            Get Started
+            <ion-icon
+              name="arrow-forward-outline"
+              slot="end">
+            </ion-icon>
+          </ion-button>
+
+          <ion-button
+            class="footer-register-button"
+            expand="block"
+            (click)="createTrip()"
+            *ngIf="sessionReady && isLoggedIn">
+            Create a Trip
+            <ion-icon
+              name="arrow-forward-outline"
+              slot="end">
+            </ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Footer Divider -->
+      <div class="footer-divider"></div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="footer-copyright">
+          <span class="copyright-symbol">©</span>
+          {{ currentYear }} Trip Tracker
+          <span class="footer-separator">•</span>
+          Made for better journeys.
+        </div>
+
+        <div class="footer-bottom-links">
+          <a routerLink="/home">Home</a>
+
+          <a
+            routerLink="/register"
+            *ngIf="sessionReady && !isLoggedIn">
+            Register
+          </a>
+
+          <span class="footer-version">
+            Travel together
+          </span>
+        </div>
+      </div>
+    </footer>
+
   </div>
 </ion-content>
