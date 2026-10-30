@@ -1,5 +1,6 @@
 
 
+
 // import { CommonModule } from '@angular/common';
 // import {
 //   ChangeDetectorRef,
@@ -83,6 +84,7 @@
 //   private stompClient: Client | null = null;
 //   private map: L.Map | null = null;
 //   private mapInitialized = false;
+//   private hasAutoZoomedToMyLocation = false;
 
 //   private readonly markers = new Map<number, L.CircleMarker>();
 
@@ -433,72 +435,214 @@
 
 //     this.mapInitialized = true;
 
-//     // Correct the map dimensions after Ionic has rendered the page.
+//     // Correct map dimensions after Ionic has rendered the page.
 //     setTimeout(() => {
-//       if (!this.destroyed && this.map) {
-//         this.map.invalidateSize();
+//       if (this.destroyed || !this.map) {
+//         return;
 //       }
-//     }, 100);
+
+//       this.map.invalidateSize();
+
+//       // If the current user's location arrived before map initialization,
+//       // zoom to it now. The helper guarantees this happens only once.
+//       this.zoomToMyLocationIfAvailable();
+//     }, 150);
 //   }
 
-//   private upsertLocation(location: LocationResponse): void {
-//     const latitude = Number(location.latitude);
-//     const longitude = Number(location.longitude);
-
+//   /**
+//    * Zooms to the signed-in user's location once, at street-level zoom.
+//    * It is also called when REST/WebSocket location data arrives.
+//    */
+//   private zoomToMyLocationIfAvailable(): void {
 //     if (
-//       !Number.isFinite(latitude) ||
-//       !Number.isFinite(longitude) ||
-//       latitude < -90 ||
-//       latitude > 90 ||
-//       longitude < -180 ||
-//       longitude > 180
+//       this.destroyed ||
+//       !this.map ||
+//       this.hasAutoZoomedToMyLocation
 //     ) {
 //       return;
 //     }
 
-//     const member = this.trip?.members.find(
-//       item => item.userId === location.userId
-//     );
+//     const currentUser = this.authService.getCurrentUser();
 
-//     // Do not display locations for members who have disabled sharing.
-//     if (member && !member.sharingEnabled) {
-//       this.removeMarker(location.userId);
+//     if (!currentUser) {
 //       return;
 //     }
 
-//     const existing = this.markers.get(location.userId);
-
-//     if (existing) {
-//       existing.setLatLng([latitude, longitude]);
-//       existing.setPopupContent(
-//         this.createPopupContent(location)
-//       );
-//     } else if (this.map) {
-//       const marker = L.circleMarker([latitude, longitude], {
-//         radius: 9,
-//         color: '#ffffff',
-//         weight: 2,
-//         fillColor: '#465be0',
-//         fillOpacity: 1
-//       }).addTo(this.map);
-
-//       marker.bindPopup(this.createPopupContent(location));
-
-//       this.markers.set(location.userId, marker);
-//     }
-
-//     const index = this.sharedLocations.findIndex(
-//       item => item.userId === location.userId
+//     const myLocation = this.sharedLocations.find(
+//       location => location.userId === currentUser.userId
 //     );
 
-//     if (index >= 0) {
-//       this.sharedLocations[index] = location;
-//     } else {
-//       this.sharedLocations = [...this.sharedLocations, location];
+//     if (!myLocation) {
+//       return;
 //     }
 
-//     this.cdr.detectChanges();
+//     const latitude = Number(myLocation.latitude);
+//     const longitude = Number(myLocation.longitude);
+
+//     if (
+//       !Number.isFinite(latitude) ||
+//       !Number.isFinite(longitude) ||
+//       latitude < -90 || latitude > 90 ||
+//       longitude < -180 || longitude > 180
+//     ) {
+//       return;
+//     }
+
+//     this.hasAutoZoomedToMyLocation = true;
+
+//     this.map.flyTo(
+//       [latitude, longitude],
+//       17,
+//       {
+//         animate: true,
+//         duration: 1.5
+//       }
+//     );
 //   }
+
+
+//   private upsertLocation(location: LocationResponse): void {
+//   const latitude = Number(location.latitude);
+//   const longitude = Number(location.longitude);
+
+//   if (
+//     !Number.isFinite(latitude) ||
+//     !Number.isFinite(longitude) ||
+//     latitude < -90 ||
+//     latitude > 90 ||
+//     longitude < -180 ||
+//     longitude > 180
+//   ) {
+//     return;
+//   }
+
+//   const member = this.trip?.members.find(
+//     item => item.userId === location.userId
+//   );
+
+//   // Do not display locations for members who have disabled sharing.
+//   if (member && !member.sharingEnabled) {
+//     this.removeMarker(location.userId);
+//     return;
+//   }
+
+//   // Check whether this member is the trip admin.
+//   // Assumes GroupMemberResponse contains a role field.
+//   const isAdmin = member?.role?.toUpperCase() === 'ADMIN';
+
+//   const markerColor = isAdmin ? '#e53935' : '#465be0';
+
+//   const existing = this.markers.get(location.userId);
+
+//   if (existing) {
+//     existing.setLatLng([latitude, longitude]);
+
+//     existing.setStyle({
+//       color: '#ffffff',
+//       weight: 2,
+//       fillColor: markerColor,
+//       fillOpacity: 1
+//     });
+
+//     existing.setPopupContent(
+//       this.createPopupContent(location)
+//     );
+//   } else if (this.map) {
+//     const marker = L.circleMarker([latitude, longitude], {
+//       radius: 9,
+//       color: '#ffffff',
+//       weight: 2,
+//       fillColor: markerColor,
+//       fillOpacity: 1
+//     }).addTo(this.map);
+
+//     marker.bindPopup(this.createPopupContent(location));
+
+//     this.markers.set(location.userId, marker);
+//   }
+
+//   const index = this.sharedLocations.findIndex(
+//     item => item.userId === location.userId
+//   );
+
+//   if (index >= 0) {
+//     this.sharedLocations[index] = location;
+//   } else {
+//     this.sharedLocations = [...this.sharedLocations, location];
+//   }
+
+//   // Zoom to our location only once.
+//   this.zoomToMyLocationIfAvailable();
+
+//   this.cdr.detectChanges();
+// }
+
+
+
+
+
+//   // private upsertLocation(location: LocationResponse): void {
+//   //   const latitude = Number(location.latitude);
+//   //   const longitude = Number(location.longitude);
+
+//   //   if (
+//   //     !Number.isFinite(latitude) ||
+//   //     !Number.isFinite(longitude) ||
+//   //     latitude < -90 ||
+//   //     latitude > 90 ||
+//   //     longitude < -180 ||
+//   //     longitude > 180
+//   //   ) {
+//   //     return;
+//   //   }
+
+//   //   const member = this.trip?.members.find(
+//   //     item => item.userId === location.userId
+//   //   );
+
+//   //   // Do not display locations for members who have disabled sharing.
+//   //   if (member && !member.sharingEnabled) {
+//   //     this.removeMarker(location.userId);
+//   //     return;
+//   //   }
+
+//   //   const existing = this.markers.get(location.userId);
+
+//   //   if (existing) {
+//   //     existing.setLatLng([latitude, longitude]);
+//   //     existing.setPopupContent(
+//   //       this.createPopupContent(location)
+//   //     );
+//   //   } else if (this.map) {
+//   //     const marker = L.circleMarker([latitude, longitude], {
+//   //       radius: 9,
+//   //       color: '#ffffff',
+//   //       weight: 2,
+//   //       fillColor: '#465be0',
+//   //       fillOpacity: 1
+//   //     }).addTo(this.map);
+
+//   //     marker.bindPopup(this.createPopupContent(location));
+
+//   //     this.markers.set(location.userId, marker);
+//   //   }
+
+//   //   const index = this.sharedLocations.findIndex(
+//   //     item => item.userId === location.userId
+//   //   );
+
+//   //   if (index >= 0) {
+//   //     this.sharedLocations[index] = location;
+//   //   } else {
+//   //     this.sharedLocations = [...this.sharedLocations, location];
+//   //   }
+
+//   //   // When our own first location arrives, zoom in once. Do not re-center
+//   //   // on every GPS/WebSocket update, so users can freely move the map.
+//   //   this.zoomToMyLocationIfAvailable();
+
+//   //   this.cdr.detectChanges();
+//   // }
 
 //   private createPopupContent(location: LocationResponse): string {
 //     // Escape server-provided names before placing them in HTML.
@@ -933,6 +1077,16 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectorRef,
@@ -1019,6 +1173,8 @@ export class TripDetailsPage implements OnInit, OnDestroy {
   private hasAutoZoomedToMyLocation = false;
 
   private readonly markers = new Map<number, L.CircleMarker>();
+  // One line per non-admin member, connecting that member to the admin.
+  private readonly memberLines = new Map<number, L.Polyline>();
 
   constructor(
     private route: ActivatedRoute,
@@ -1434,82 +1590,196 @@ export class TripDetailsPage implements OnInit, OnDestroy {
 
 
   private upsertLocation(location: LocationResponse): void {
-  const latitude = Number(location.latitude);
-  const longitude = Number(location.longitude);
+    const latitude = Number(location.latitude);
+    const longitude = Number(location.longitude);
 
-  if (
-    !Number.isFinite(latitude) ||
-    !Number.isFinite(longitude) ||
-    latitude < -90 ||
-    latitude > 90 ||
-    longitude < -180 ||
-    longitude > 180
-  ) {
-    return;
+    if (
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude) ||
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      return;
+    }
+
+    const member = this.trip?.members.find(
+      item => item.userId === location.userId
+    );
+
+    // Do not display locations for members who have disabled sharing.
+    if (member && !member.sharingEnabled) {
+      this.removeMarker(location.userId);
+      this.removeMemberLine(location.userId);
+
+      this.sharedLocations = this.sharedLocations.filter(
+        item => item.userId !== location.userId
+      );
+
+      this.refreshMemberConnections();
+      this.cdr.detectChanges();
+      return;
+    }
+
+    // Admin markers are red; all other member markers are blue.
+    const isAdmin = member?.role?.toUpperCase() === 'ADMIN';
+    const markerColor = isAdmin ? '#e53935' : '#465be0';
+
+    const existing = this.markers.get(location.userId);
+
+    if (existing) {
+      existing.setLatLng([latitude, longitude]);
+      existing.setStyle({
+        color: '#ffffff',
+        weight: 2,
+        fillColor: markerColor,
+        fillOpacity: 1
+      });
+      existing.setPopupContent(this.createPopupContent(location));
+    } else if (this.map) {
+      const marker = L.circleMarker([latitude, longitude], {
+        radius: 9,
+        color: '#ffffff',
+        weight: 2,
+        fillColor: markerColor,
+        fillOpacity: 1
+      }).addTo(this.map);
+
+      marker.bindPopup(this.createPopupContent(location));
+      this.markers.set(location.userId, marker);
+    }
+
+    // Insert or replace this member's latest location.
+    const index = this.sharedLocations.findIndex(
+      item => item.userId === location.userId
+    );
+
+    if (index >= 0) {
+      this.sharedLocations[index] = location;
+    } else {
+      this.sharedLocations = [...this.sharedLocations, location];
+    }
+
+    // Recalculate admin-to-member lines after every location update.
+    this.refreshMemberConnections();
+
+    // Zoom to our location only once.
+    this.zoomToMyLocationIfAvailable();
+
+    this.cdr.detectChanges();
   }
 
-  const member = this.trip?.members.find(
-    item => item.userId === location.userId
-  );
+  /**
+   * Draws exactly one line from the admin to each other member
+   * who has enabled location sharing and has a known location.
+   * No member-to-member lines are created.
+   */
+  private refreshMemberConnections(): void {
+    if (!this.map || !this.trip) {
+      return;
+    }
 
-  // Do not display locations for members who have disabled sharing.
-  if (member && !member.sharingEnabled) {
-    this.removeMarker(location.userId);
-    return;
+    const admin = this.trip.members.find(
+      member => member.role?.toUpperCase() === 'ADMIN'
+    );
+
+    if (!admin || !admin.sharingEnabled) {
+      this.clearMemberConnections();
+      return;
+    }
+
+    const adminLocation = this.sharedLocations.find(
+      location => location.userId === admin.userId
+    );
+
+    if (!adminLocation) {
+      this.clearMemberConnections();
+      return;
+    }
+
+    for (const member of this.trip.members) {
+      // Never draw a line from the admin to themselves.
+      if (member.userId === admin.userId) {
+        continue;
+      }
+
+      if (!member.sharingEnabled) {
+        this.removeMemberLine(member.userId);
+        continue;
+      }
+
+      const memberLocation = this.sharedLocations.find(
+        location => location.userId === member.userId
+      );
+
+      if (!memberLocation) {
+        this.removeMemberLine(member.userId);
+        continue;
+      }
+
+      const positions: L.LatLngExpression[] = [
+        [adminLocation.latitude, adminLocation.longitude],
+        [memberLocation.latitude, memberLocation.longitude]
+      ];
+
+      const existingLine = this.memberLines.get(member.userId);
+
+      if (existingLine) {
+        existingLine.setLatLngs(positions);
+      } else {
+        const line = L.polyline(positions, {
+          color: '#64748b',
+          weight: 3,
+          opacity: 0.8,
+          dashArray: '8, 8'
+        }).addTo(this.map);
+
+        line.bringToBack();
+        this.memberLines.set(member.userId, line);
+      }
+    }
+
+    // Remove any line whose member is no longer eligible.
+    const validMemberIds = new Set(
+      this.trip.members
+        .filter(member =>
+          member.userId !== admin.userId &&
+          member.sharingEnabled &&
+          this.sharedLocations.some(
+            location => location.userId === member.userId
+          )
+        )
+        .map(member => member.userId)
+    );
+
+    this.memberLines.forEach((line, userId) => {
+      if (!validMemberIds.has(userId)) {
+        line.removeFrom(this.map!);
+        this.memberLines.delete(userId);
+      }
+    });
   }
 
-  // Check whether this member is the trip admin.
-  // Assumes GroupMemberResponse contains a role field.
-  const isAdmin = member?.role?.toUpperCase() === 'ADMIN';
+  private removeMemberLine(userId: number): void {
+    const line = this.memberLines.get(userId);
 
-  const markerColor = isAdmin ? '#e53935' : '#465be0';
+    if (line && this.map) {
+      line.removeFrom(this.map);
+    }
 
-  const existing = this.markers.get(location.userId);
+    this.memberLines.delete(userId);
+  }
 
-  if (existing) {
-    existing.setLatLng([latitude, longitude]);
-
-    existing.setStyle({
-      color: '#ffffff',
-      weight: 2,
-      fillColor: markerColor,
-      fillOpacity: 1
+  private clearMemberConnections(): void {
+    this.memberLines.forEach(line => {
+      if (this.map) {
+        line.removeFrom(this.map);
+      }
     });
 
-    existing.setPopupContent(
-      this.createPopupContent(location)
-    );
-  } else if (this.map) {
-    const marker = L.circleMarker([latitude, longitude], {
-      radius: 9,
-      color: '#ffffff',
-      weight: 2,
-      fillColor: markerColor,
-      fillOpacity: 1
-    }).addTo(this.map);
-
-    marker.bindPopup(this.createPopupContent(location));
-
-    this.markers.set(location.userId, marker);
+    this.memberLines.clear();
   }
-
-  const index = this.sharedLocations.findIndex(
-    item => item.userId === location.userId
-  );
-
-  if (index >= 0) {
-    this.sharedLocations[index] = location;
-  } else {
-    this.sharedLocations = [...this.sharedLocations, location];
-  }
-
-  // Zoom to our location only once.
-  this.zoomToMyLocationIfAvailable();
-
-  this.cdr.detectChanges();
-}
-
-
 
 
 
@@ -1781,6 +2051,7 @@ export class TripDetailsPage implements OnInit, OnDestroy {
       )
     };
 
+    this.refreshMemberConnections();
     this.cdr.detectChanges();
   }
 
@@ -1995,5 +2266,6 @@ export class TripDetailsPage implements OnInit, OnDestroy {
     }
 
     this.markers.clear();
+    this.memberLines.clear();
   }
 }
