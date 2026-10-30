@@ -4,7 +4,6 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-
     <ion-title>Trip Details</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -21,28 +20,20 @@
     <!-- Error State -->
     <div class="error-state" *ngIf="!loading && errorMessage">
       <h2>Unable to load trip</h2>
-
       <ion-text color="danger">
         <p>{{ errorMessage }}</p>
       </ion-text>
-
-      <ion-button (click)="goHome()">
-        Back to Home
-      </ion-button>
+      <ion-button (click)="goHome()">Back to Home</ion-button>
     </div>
 
-    <!-- Trip Details -->
     <ng-container *ngIf="!loading && trip as details">
 
       <!-- Trip Hero -->
       <section class="trip-hero">
         <div class="trip-icon">✈️</div>
-
         <div class="trip-heading">
           <p class="eyebrow">YOUR ADVENTURE</p>
-
           <h1>{{ details.name }}</h1>
-
           <span
             class="status-badge"
             [class.inactive]="!details.active">
@@ -74,14 +65,104 @@
               <h2 class="join-code">{{ details.joinCode }}</h2>
             </div>
 
-            <ion-button
-              size="small"
-              (click)="copyJoinCode()">
+            <ion-button size="small" (click)="copyJoinCode()">
               Copy code
             </ion-button>
           </div>
         </ion-card-content>
       </ion-card>
+
+      <!-- Location Sharing -->
+      <section class="location-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">STAY CONNECTED</p>
+            <h2>Live Location</h2>
+          </div>
+          <span
+            class="sharing-status"
+            [class.sharing-on]="sharingEnabled">
+            {{ sharingEnabled ? 'Sharing on' : 'Sharing off' }}
+          </span>
+        </div>
+
+        <ion-card class="location-card">
+          <ion-card-content>
+            <p class="location-description">
+              Share your device location with members of this trip.
+              You can turn sharing off at any time.
+            </p>
+
+            <ion-button
+              expand="block"
+              [color]="sharingEnabled ? 'medium' : 'primary'"
+              [disabled]="sharingBusy || !details.active"
+              (click)="toggleLocationSharing()">
+              <ion-spinner
+                *ngIf="sharingBusy"
+                name="crescent">
+              </ion-spinner>
+
+              <span *ngIf="!sharingBusy">
+                {{ sharingEnabled
+                  ? 'Stop Sharing My Location'
+                  : 'Share My Location' }}
+              </span>
+            </ion-button>
+
+            <p class="location-message">
+              {{ locationMessage }}
+            </p>
+
+            <div class="live-status">
+              <span class="live-dot"></span>
+              {{ liveConnectionStatus }}
+            </div>
+
+            <div
+              class="map-container"
+              id="trip-location-map"
+              aria-label="Map showing shared trip member locations">
+            </div>
+
+            <p class="map-caption">
+              Only locations shared by trip members are displayed.
+              Map markers update when new location data arrives.
+            </p>
+
+            <div class="location-list" *ngIf="sharedLocations.length">
+              <h3>Members sharing their location</h3>
+
+              <div
+                class="location-list-item"
+                *ngFor="let location of sharedLocations">
+
+                <div class="location-avatar">
+                  {{ location.userName?.charAt(0)?.toUpperCase() || '?' }}
+                </div>
+
+                <div class="location-member-details">
+                  <strong>{{ location.userName }}</strong>
+                  <span>
+                    Updated {{ formatDate(location.recordedAt) }}
+                  </span>
+                </div>
+
+                <span class="location-accuracy">
+                  {{ location.accuracy != null
+                    ? '±' + (location.accuracy | number:'1.0-0') + ' m'
+                    : '' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="empty-locations" *ngIf="!sharedLocations.length">
+              No shared locations available yet. Members must enable
+              location sharing and allow device location access.
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </section>
 
       <!-- Leave Trip -->
       <section class="leave-trip-section">
@@ -89,6 +170,7 @@
           expand="block"
           color="danger"
           fill="outline"
+          [disabled]="sharingBusy"
           (click)="leaveTrip()">
           Leave Trip
         </ion-button>
@@ -114,7 +196,6 @@
 
         <ion-card class="members-card">
           <ion-list *ngIf="details.members?.length; else noMembers">
-
             <ion-item
               *ngFor="let member of details.members; trackBy: trackMember"
               lines="full"
@@ -151,9 +232,7 @@
                   {{ member.sharingEnabled ? 'Sharing on' : 'Sharing off' }}
                 </span>
               </div>
-
             </ion-item>
-
           </ion-list>
 
           <ng-template #noMembers>
@@ -165,6 +244,5 @@
       </section>
 
     </ng-container>
-
   </div>
 </ion-content>
