@@ -79,6 +79,7 @@
             <p class="eyebrow">STAY CONNECTED</p>
             <h2>Live Location</h2>
           </div>
+
           <span
             class="sharing-status"
             [class.sharing-on]="sharingEnabled">
@@ -88,16 +89,19 @@
 
         <ion-card class="location-card">
           <ion-card-content>
+
             <p class="location-description">
               Share your device location with members of this trip.
               You can turn sharing off at any time.
             </p>
 
+            <!-- Location Sharing Button -->
             <ion-button
               expand="block"
               [color]="sharingEnabled ? 'medium' : 'primary'"
               [disabled]="sharingBusy || !details.active"
               (click)="toggleLocationSharing()">
+
               <ion-spinner
                 *ngIf="sharingBusy"
                 name="crescent">
@@ -114,11 +118,49 @@
               {{ locationMessage }}
             </p>
 
+            <!-- Live Connection Status -->
             <div class="live-status">
               <span class="live-dot"></span>
               {{ liveConnectionStatus }}
             </div>
 
+            <!-- Route Display Toggle -->
+            <div class="route-mode-section">
+              <h3>Member Connections</h3>
+
+              <p class="route-mode-description">
+                Choose how to display the connection between the trip
+                administrator and members sharing their locations.
+              </p>
+
+              <div class="route-toggle">
+                <ion-button
+                  size="small"
+                  expand="block"
+                  [fill]="connectionMode === 'direct' ? 'solid' : 'outline'"
+                  [color]="connectionMode === 'direct' ? 'primary' : 'medium'"
+                  (click)="setConnectionMode('direct')">
+                  Locate All Members
+                </ion-button>
+
+                <ion-button
+                  size="small"
+                  expand="block"
+                  [fill]="connectionMode === 'road' ? 'solid' : 'outline'"
+                  [color]="connectionMode === 'road' ? 'primary' : 'medium'"
+                  (click)="setConnectionMode('road')">
+                  Follow Admin
+                </ion-button>
+              </div>
+
+              <p class="route-mode-hint">
+                {{ connectionMode === 'direct'
+                  ? 'Showing straight lines between the administrator and each sharing member.'
+                  : 'Showing road routes between the administrator and each sharing member.' }}
+              </p>
+            </div>
+
+            <!-- Map -->
             <div
               class="map-container"
               id="trip-location-map"
@@ -130,6 +172,7 @@
               Map markers update when new location data arrives.
             </p>
 
+            <!-- Shared Locations -->
             <div class="location-list" *ngIf="sharedLocations.length">
               <h3>Members sharing their location</h3>
 
@@ -143,6 +186,7 @@
 
                 <div class="location-member-details">
                   <strong>{{ location.userName }}</strong>
+
                   <span>
                     Updated {{ formatDate(location.recordedAt) }}
                   </span>
@@ -156,29 +200,20 @@
               </div>
             </div>
 
-            <div class="empty-locations" *ngIf="!sharedLocations.length">
+            <!-- Empty Locations -->
+            <div
+              class="empty-locations"
+              *ngIf="!sharedLocations.length">
+
               No shared locations available yet. Members must enable
               location sharing and allow device location access.
             </div>
+
           </ion-card-content>
         </ion-card>
       </section>
 
-      <!-- Leave Trip -->
-      <section class="leave-trip-section">
-        <ion-button
-          expand="block"
-          color="danger"
-          fill="outline"
-          [disabled]="sharingBusy"
-          (click)="leaveTrip()">
-          Leave Trip
-        </ion-button>
 
-        <p class="leave-trip-hint">
-          You will be removed from this trip and its member list.
-        </p>
-      </section>
 
       <!-- Trip Members -->
       <section class="members-section">
@@ -196,6 +231,7 @@
 
         <ion-card class="members-card">
           <ion-list *ngIf="details.members?.length; else noMembers">
+
             <ion-item
               *ngFor="let member of details.members; trackBy: trackMember"
               lines="full"
@@ -232,6 +268,7 @@
                   {{ member.sharingEnabled ? 'Sharing on' : 'Sharing off' }}
                 </span>
               </div>
+
             </ion-item>
           </ion-list>
 
@@ -241,6 +278,22 @@
             </div>
           </ng-template>
         </ion-card>
+      </section>
+
+            <!-- Leave Trip -->
+      <section class="leave-trip-section">
+        <ion-button
+          expand="block"
+          color="danger"
+          fill="outline"
+          [disabled]="sharingBusy"
+          (click)="leaveTrip()">
+          Leave Trip
+        </ion-button>
+
+        <p class="leave-trip-hint">
+          You will be removed from this trip and its member list.
+        </p>
       </section>
 
     </ng-container>
